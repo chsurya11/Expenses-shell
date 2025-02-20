@@ -43,5 +43,13 @@ VALIDATE $? "Enabling MYSQL Server"
 systemctl start mysqld &>>$LOG_FILE_NAME
 VALIDATE $? "Starting MYSQL Server"
 
-mysql_secure_installation --set-root-pass ExpenseApp@1
-VALIDATE $? "Setting root Password"
+mysql -h mysql.jiocoinmarket.online -u root -pExpenseApp@1 -e 'show databases;'
+
+if [ $? -ne 0]
+then
+    echo "MySQL Root password not steup" &>>$LOG_FILE_NAME
+    mysql_secure_installation --set-root-pass ExpenseApp@1
+    VALIDATE $? "Setting root Password"
+else
+    echo -e "MySQL Root password already setup ..$Y SKIPPING $N"
+fi

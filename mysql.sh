@@ -43,7 +43,7 @@ VALIDATE $? "Enabling MYSQL Server"
 systemctl start mysqld &>>$LOG_FILE_NAME
 VALIDATE $? "Starting MYSQL Server"
 
-mysql -h mysql.jiocoinmarket.online -u root -pExpenseApp@1 -e 'show databases;'
+mysql -h mysql.jiocoinmarket.online -u root -pExpenseApp@1 -e 'show databases;' &>>$LOG_FILE_NAME
 
 if [ $? -ne 0]
 then

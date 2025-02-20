@@ -45,7 +45,7 @@ VALIDATE $? "Starting MYSQL Server"
 
 mysql -h mysql.jiocoinmarket.online -u root -pExpenseApp@1 -e 'show databases;' &>>$LOG_FILE_NAME
 
-if [ $? -ne 0]
+if [ $? -ne 0 ]
 then
     echo "MySQL Root password not steup" &>>$LOG_FILE_NAME
     mysql_secure_installation --set-root-pass ExpenseApp@1

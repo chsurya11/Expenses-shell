@@ -34,29 +34,49 @@ echo "Script started executing at: $TIMESTAMP" &>>$LOG_FILE_NAME
 
 CHECK_ROOT
 
-dnf module disable nodejs -y
+dnf module disable nodejs -y &>>$LOG_FILE_NAME
 VALIDATE $? "Disabling existing default Nodejs"
 
-dnf module enable nodejs:20 -y
-VALIDATE $? "Enabling Nodejs20"
+dnf module enable nodejs:20 -y &>>$LOG_FILE_NAME
+VALIDATE $? "Enabling NodeJS 20"
 
-dnf install nodejs -y
-VALIDATE $? "Installing Nodejs"
+dnf install nodejs -y &>>$LOG_FILE_NAME
+VALIDATE $? "Installing Node JS"
 
-useradd expense
+useradd expense &>>$LOG_FILE_NAME
 VALIDATE $? "Adding Expense user"
 
-mkdir /app
+mkdir /app &>>$LOG_FILE_NAME
 VALIDATE $? "Creating app directory"
 
-curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOG_FILE_NAME
 VALIDATE $? "Downloading backend"
 
 cd /app
 rm -rf /app/*
 
-unzip /tmp/backend.zip
+unzip /tmp/backend.zip &>>$LOG_FILE_NAME
 VALIDATE $? "Unzip backend"
 
-npm install
+npm install &>>$LOG_FILE_NAME
 VALIDATE $? "Installing backend"
+
+cp /home/ec2-user/Expenses-shell/backend.service /etc/systemd/system/backend.service &>>$LOG_FILE_NAME
+
+dnf install mysql -y &>>$LOG_FILE_NAME
+VALIDATE $? "Installing MYSQL Client"
+
+mysql -h mysql.jiocoinmarket.online -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOG_FILE_NAME
+VALIDATE $? "Setting up the transaction schema and tables"
+
+systemctl daemon-reload &>>$LOG_FILE_NAME
+VALIDATE $? "Daemon-reload"
+
+systemctl start backend &>>$LOG_FILE_NAME
+VALIDATE $? "Starting backend"
+
+systemctl enable backend &>>$LOG_FILE_NAME
+VALIDATE $? "Enabling backend"
+
+systemctl restart backend &>>$LOG_FILE_NAME
+VALIDATE $? "Restart backend"
